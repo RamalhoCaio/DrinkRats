@@ -1,8 +1,8 @@
 import express from "express";
 import bodyParser from "body-parser";
-import authRoutes from "./auth/authRoutes";
-import { authenticate } from "./auth/authMiddleware";
-import { PrismaClient } from "./generated/prisma";
+import authRoutes from "../auth/authRoutes";
+import { authenticate } from "../auth/authMiddleware";
+import { PrismaClient } from "../generated/prisma";
 
 const prisma = new PrismaClient();
 const app = express();

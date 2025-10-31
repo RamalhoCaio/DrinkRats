@@ -12,16 +12,27 @@ datasource db {
 }
 
 model User {
-  id        String  @id @unique @default(uuid())
+  id        String  @id @default(uuid())
   name      String
   username  String  @unique
   email     String? @unique
   telephone String? @unique
-  password  String  @default("")
-
+  password  String
   posts     Post[]
+  tokens    Token[] // tokens ativos do usuário
 
   @@map("usuarios")
+}
+
+model Token {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("tokens")
 }
 
 model Post {
@@ -30,19 +41,17 @@ model Post {
   datePublished DateTime @updatedAt
   photoPath     String
 
-  
   userId String
-  user   User    @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   drinkId String
-  drink Drink   @relation(fields: [drinkId], references: [id])
+  drink   Drink  @relation(fields: [drinkId], references: [id])
 
   @@map("postagem")
 }
 
-
 model Drink {
-  id    String  @id @unique @default(uuid())
+  id     String @id @unique @default(uuid())
   Dname  String
   path   String
   rating Int

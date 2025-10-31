@@ -69,19 +69,12 @@ app.post("/drinks", async (req: Request, res: Response) => {
 });
 
 app.get("/drinks", async (_req: Request, res: Response) => {
-  const drinks = await prisma.drink.findMany({ include: { posts: true } });
+  const drinks = await prisma.drink.findMany({ include: {
+posts: true } });
   res.json(drinks);
 });
 
 app.get("/drinks/:id", async (req: Request, res: Response) => {
-  const drink = await prisma.drink.findUnique({
-    where: { id: req.params.id },
-    include: { posts: true },
-  });
-  res.json(drink);
-});
-
-app.put("/drinks/:id", async (req: Request, res: Response) => {
   const drink = await prisma.drink.update({
     where: { id: req.params.id },
     data: req.body,
@@ -89,10 +82,11 @@ app.put("/drinks/:id", async (req: Request, res: Response) => {
   res.json(drink);
 });
 
-app.delete("/drinks/:id", async (req: Request, res: Response) => {
-  await prisma.drink.delete({ where: { id: req.params.id } });
-  res.json({ message: "Drink deleted" });
+app.delete("/drinks/:id", async (req: Request, res: Response) => { 
+  await prisma.drink.delete({ where: { id: req.params.id } }); 
+  res.json({ message: "Drink deleted" }); 
 });
+
 
 /* ============================
    POST CRUD
