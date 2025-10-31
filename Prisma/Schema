@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  name       String
+  username   String   @unique
+  email      String?  @unique
+  telephone  String?  @unique
+  password   String
+  posts      Post[]
+  tokens     Token[]  // tokens ativos do usuário
+
+  @@map("usuarios")
+}
+
+model Token {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("tokens")
+}
+
+model Post {
+  id            String   @id @unique @default(uuid())
+  legenda       String?
+  datePublished DateTime @updatedAt
+  photoPath     String
+
+  
+  userId String
+  user   User    @relation(fields: [userId], references: [id])
+
+  drinkId String
+  drink Drink   @relation(fields: [drinkId], references: [id])
+
+  rating  Float
+
+  @@map("postagem")
+}
+
+
+
+model Drink {
+  id      String   @id @default(uuid())
+  Dname   String
+  path    String
+  rating  Float?   @default(0) // média calculada via código
+  posts   Post[]               // relação 1:N com Post
+
+  @@map("produto")
+}
