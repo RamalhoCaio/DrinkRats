@@ -1,0 +1,57 @@
+import express from "express";
+import { PrismaClient } from "./generated/prisma";
+import { authenticate } from "./auth";
+
+const prisma = new PrismaClient();
+const router = express.Router();
+
+// CREATE
+router.post("/", authenticate, async (req, res) => {
+  try {
+    const drink = await prisma.drink.create({ data: req.body });
+    res.json(drink);
+  } catch (err) {
+    res.status(400).json({ error: String(err) });
+  }
+});
+
+// READ ALL
+router.get("/", async (_req, res) => {
+  const drinks = await prisma.drink.findMany({ include: { posts: true } });
+  res.json(drinks);
+});
+
+// READ ONE
+router.get("/:id", async (req, res) => {
+  const drink = await prisma.drink.findUnique({
+    where: { id: req.params.id },
+    include: { posts: true },
+  });
+  if (!drink) return res.status(404).json({ error: "Drink não encontrado" });
+  res.json(drink);
+});
+
+// UPDATE
+router.put("/:id", authenticate, async (req, res) => {
+  try {
+    const drink = await prisma.drink.update({
+      where: { id: req.params.id },
+      data: req.body,
+    });
+    res.json(drink);
+  } catch {
+    res.status(404).json({ error: "Drink não encontrado" });
+  }
+});
+
+// DELETE
+router.delete("/:id", authenticate, async (req, res) => {
+  try {
+    await prisma.drink.delete({ where: { id: req.params.id } });
+    res.json({ message: "Drink deleted" });
+  } catch {
+    res.status(404).json({ error: "Drink não encontrado" });
+  }
+});
+
+export default router;
